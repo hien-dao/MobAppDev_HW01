@@ -8,7 +8,11 @@ class CalculatorLogic {
   String get output => _output;
 
   void addInput(String value) {
+    if (_input.isEmpty && ['+', '*', '/'].contains(value)) return;
     _input += value;
+    if (value == '%') {
+    _input += '/100';
+  }
   }
 
   void delete() {
@@ -24,23 +28,10 @@ class CalculatorLogic {
 
   void calculate() {
     try {
-      // VERY basic (you'll improve later)
       final result = _evaluate(_input);
       _output = result.toString();
     } catch (e) {
       _output = 'Error';
-    }
-  }
-
-  double _evaluate(String expression) {
-    // ⚠️ Placeholder logic
-    // You’ll likely replace this with a parser later
-    return double.parse(expression);
-  }
-
-  void deleteLast() {
-    if (_input.isNotEmpty) {
-      _input = _input.substring(0, _input.length - 1);
     }
   }
 
@@ -50,5 +41,12 @@ class CalculatorLogic {
     } else {
       _input = '-$_input';
     }
+  }
+
+  double _evaluate(String expression) {
+    Parser p = Parser();
+    Expression exp = p.parse(expression);
+    ContextModel cm = ContextModel();
+    return exp.evaluate(EvaluationType.REAL, cm);
   }
 }
