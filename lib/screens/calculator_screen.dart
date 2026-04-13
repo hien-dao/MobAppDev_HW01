@@ -12,7 +12,10 @@ class CalculatorScreen extends StatefulWidget {
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
   final CalculatorLogic _logic = CalculatorLogic();
+
   String get _display => _logic.output.isEmpty ? _logic.input : _logic.output;
+  bool _isOperator(String text) => ['+', '-', '*', '/', '%'].contains(text);
+
   final List<String> _buttons = [
     'C', 'DEL', '%', '/',
     '7', '8', '9', '*',
@@ -20,6 +23,16 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     '1', '2', '3', '+',
     '0', '+/-', '.', '='
   ];
+
+  Color _getButtonColor(BuildContext context, String text) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (text == '=') return Colors.green;
+    if (text == 'C') return Colors.red;
+    if (_isOperator(text)) return Colors.orange;
+
+    return isDark ? Colors.grey[700]! : Colors.blue;
+  }
 
   void _handleButton(String text) {
     setState(() {
@@ -72,6 +85,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     ? Colors.grey[800]
                     : Colors.grey[200],
                 borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[600]!
+                      : Colors.black,
+                  width: 2.0,
+                ),
               ),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -97,7 +116,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               itemBuilder: (context, index) {
                 final text = _buttons[index];
                 VoidCallback onPressed;
-                return CalculatorButton(text: text, onPressed: () => _handleButton(text));
+                return CalculatorButton(
+                  text: text,
+                  onPressed: () => _handleButton(text),
+                  backgroundColor: _getButtonColor(context, text),
+                );
               },
             ),
             
