@@ -7,17 +7,47 @@ class CalculatorLogic {
   String get input => _input;
   String get output => _output;
 
-  void addInput(String value) {
-    if (_input.isEmpty && ['+', '*', '/'].contains(value)) return;
-    _input += value;
-    if (value == '%') {
-    _input += '/100';
+  bool _isValidExpression(String input) {
+    if (input.isEmpty) return false;
+
+    // Prevent ending with operator
+    if (['+', '-', '*', '/'].contains(input[input.length - 1])) {
+      return false;
+    }
+
+    // Prevent double operators
+    if (input.contains(RegExp(r'[+\-*/]{2,}'))) {
+      return false;
+    }
+
+    // Prevent multiple decimals in a number
+    if (input.contains(RegExp(r'\.\.'))) {
+      return false;
+    }
+
+    return true;
   }
+
+  void addInput(String value) {
+    if (_output.isNotEmpty) {
+      _input = '';
+      _output = '';
+    }
+
+    if (_input.isEmpty && ['+', '*', '/', '%'].contains(value)) return;
+
+    if (value == '%') {
+      _input += '/100';
+    } else {
+      _input += value;
+    }
   }
 
   void delete() {
     if (_input.isNotEmpty) {
       _input = _input.substring(0, _input.length - 1);
+    } else {
+      _output = '';
     }
   }
 
@@ -27,11 +57,23 @@ class CalculatorLogic {
   }
 
   void calculate() {
+    if (!_isValidExpression(_input)) {
+      _output = 'Invalid';
+      return;
+    }
+
     try {
       final result = _evaluate(_input);
-      _output = result.toString();
+
+      if (result.isNaN || result.isInfinite) {
+        _output = 'Math Error';
+      } else {
+        _output = result.toString();
+      }
     } catch (e) {
       _output = 'Error';
+      // Optional: debug log
+      print('Calculation error: $e');
     }
   }
 
