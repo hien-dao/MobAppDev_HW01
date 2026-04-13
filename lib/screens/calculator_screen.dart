@@ -21,6 +21,27 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     '0', '+/-', '.', '='
   ];
 
+  void _handleButton(String text) {
+    setState(() {
+      switch (text) {
+        case 'C':
+          _logic.clear();
+          break;
+        case 'DEL':
+          _logic.delete();
+          break;
+        case '=':
+          _logic.calculate();
+          break;
+        case '+/-':
+          _logic.toggleSign();
+          break;
+        default:
+          _logic.addInput(text);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +62,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         ],
       ),
       body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Container(
               padding: const EdgeInsets.all(16.0),
@@ -52,9 +73,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     : Colors.grey[200],
                 borderRadius: BorderRadius.circular(12.0),
               ),
-              child: Text(
-                _display,
-                style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                reverse: true,
+                child: Text(
+                  _display,
+                  style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -72,20 +97,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               itemBuilder: (context, index) {
                 final text = _buttons[index];
                 VoidCallback onPressed;
-                switch (text) {
-                  case 'C':
-                    onPressed = _logic.clear;
-                    break;
-                  case 'DEL':
-                    onPressed = _logic.delete;
-                    break;
-                  case '=':
-                    onPressed = _logic.calculate;
-                    break;
-                  default:
-                    onPressed = () => _logic.addInput(text);
-                }
-                return CalculatorButton(text: text, onPressed: onPressed);
+                return CalculatorButton(text: text, onPressed: () => _handleButton(text));
               },
             ),
             
