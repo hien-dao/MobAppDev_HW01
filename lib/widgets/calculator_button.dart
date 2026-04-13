@@ -16,8 +16,11 @@ class CalculatorButton extends StatelessWidget {
       onPressed: onPressed,
       child: Text(text),
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         textStyle: const TextStyle(fontSize: 24),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
